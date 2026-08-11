@@ -1,0 +1,782 @@
+/* ══════════════════════════════════════════════
+   Matouš Syrový – koučink pro majitele a CEO
+   ══════════════════════════════════════════════ */
+
+:root {
+  --black: #0a0a0a;
+  --dark: #111110;
+  --surface: #171716;
+  --card: #1c1c1a;
+  --brand-blue: #179ED9;
+  --brand-blue-dim: rgba(23,158,217,0.12);
+  --brand-blue-mid: rgba(23,158,217,0.65);
+  --text: #f0ece4;
+  /* světlejší odstíny kvůli čitelnosti na tmavém pozadí
+     (kontrast 7,9:1 a 5,8:1 – s rezervou nad normou WCAG AA) */
+  --muted: #bcb5a8;
+  --faint: #a09a8e;
+  --border: rgba(255,255,255,0.06);
+  --mono: 'Montserrat', sans-serif;
+  --serif: 'Playfair Display', Georgia, serif;
+  --wrap: 1200px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--black);
+  color:var(--text);
+  font-family:var(--mono);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+/* <picture> se používá jen kvůli WebP – nesmí sám tvořit prvek rozvržení,
+   jinak by se mřížka i rozměry vztahovaly k němu místo k fotce uvnitř */
+picture{display:contents;}
+
+/* přístupnost – skok na obsah */
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:100;
+  background:var(--brand-blue);color:#fff;padding:.8em 1.4em;
+  font-size:.8rem;text-decoration:none;
+}
+.skip:focus{left:0;}
+
+:focus-visible{outline:2px solid var(--brand-blue);outline-offset:3px;}
+
+/* ── SPOLEČNÉ PRVKY ── */
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 2rem;}
+
+.section-label{
+  display:flex;align-items:center;gap:.8rem;
+  font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--brand-blue);font-weight:700;
+  margin-bottom:1.8rem;
+}
+.section-label::before{content:'';width:28px;height:1px;background:var(--brand-blue);}
+.section-label.center{justify-content:center;}
+
+h2{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:clamp(2rem,3.5vw,3rem);
+  line-height:1.2;
+  margin-bottom:1.6rem;
+}
+h2 em{font-style:italic;font-weight:400;color:rgba(240,236,228,.6);}
+
+.lead{color:var(--muted);font-size:1.04rem;line-height:1.85;font-weight:400;}
+.lead p+p{margin-top:1.2rem;}
+
+.cta-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:1rem;
+  background:var(--brand-blue);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  text-decoration:none;
+  padding:1.1em 2.5em;
+  border:none;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:all .3s ease;
+}
+.cta-btn::before{
+  content:'';
+  position:absolute;inset:0;
+  background:rgba(255,255,255,.15);
+  transform:translateX(-101%);
+  transition:transform .35s ease;
+}
+.cta-btn:hover::before{transform:translateX(0);}
+.cta-arrow{font-size:1rem;transition:transform .3s;position:relative;}
+.cta-btn:hover .cta-arrow{transform:translateX(4px);}
+
+.cta-ghost{
+  display:inline-flex;align-items:center;gap:.8rem;
+  color:var(--brand-blue);text-decoration:none;
+  font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  border-bottom:1px solid var(--brand-blue-mid);
+  padding-bottom:.4em;
+  transition:border-color .3s;
+}
+.cta-ghost:hover{border-color:var(--brand-blue);}
+
+/* opakovaný pruh s výzvou mezi sekcemi */
+.cta-strip{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:var(--dark);
+  padding:3.5rem 2rem;
+  text-align:center;
+}
+.cta-strip p{
+  font-family:var(--serif);
+  font-size:clamp(1.2rem,2.2vw,1.7rem);
+  font-style:italic;
+  margin-bottom:1.8rem;
+  color:var(--text);
+}
+
+/* ── HLAVIČKA ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  z-index:50;
+  /* nad herem průhledná, po odscrollování se podloží */
+  background:transparent;
+  border-bottom:1px solid transparent;
+  transition:background .3s ease,border-color .3s ease,backdrop-filter .3s ease;
+}
+.topbar.scrolled{
+  background:rgba(10,10,10,.92);
+  border-bottom-color:var(--border);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.topbar-inner{
+  max-width:1400px;margin:0 auto;
+  padding:1.1rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1.5rem;
+}
+.topbar-logo{
+  display:inline-flex;align-items:center;gap:.85rem;
+  text-decoration:none;
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:1.3rem;
+  color:var(--brand-blue);
+  white-space:nowrap;
+}
+.topbar-logo svg{flex:none;}
+.topbar-cta{
+  padding:.95em 1.9em;
+  font-size:.7rem;
+  white-space:nowrap;
+}
+
+/* posun kotev, aby je hlavička nezakrývala */
+[id]{scroll-margin-top:5.5rem;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  position:relative;
+  overflow:hidden;
+}
+.hero-left{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:8rem 4rem 6rem 6rem;
+  position:relative;
+  z-index:2;
+}
+.hero-right{position:relative;overflow:hidden;}
+.hero-photo{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  /* posazeno na obličej – spodek se ořízne dřív než hlava */
+  object-position:center 22%;
+  filter:grayscale(15%) contrast(1.05);
+}
+.hero-wave-overlay{
+  position:absolute;left:-2px;top:0;bottom:0;
+  width:180px;z-index:3;pointer-events:none;
+}
+.hero-right::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(to right, var(--black) 0%, rgba(10,10,10,0.3) 40%, transparent 70%);
+  z-index:2;
+}
+
+h1{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:clamp(2.8rem,5.4vw,5.2rem);
+  line-height:1;
+  letter-spacing:-.02em;
+  margin-bottom:.6rem;
+  opacity:0;animation:fadeUp 1s .55s forwards;
+}
+h1 .h1-name{display:block;}
+h1 .h1-name em{font-style:italic;font-weight:400;}
+h1 .h1-kw{
+  display:block;
+  font-family:var(--mono);
+  font-size:.8rem;
+  font-weight:700;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--brand-blue);
+  margin-bottom:1.2rem;
+  line-height:1.5;
+}
+
+.hero-sub{
+  font-family:var(--serif);
+  font-size:clamp(1rem,1.8vw,1.3rem);
+  font-style:italic;font-weight:300;
+  color:var(--faint);
+  max-width:440px;line-height:1.6;
+  margin-bottom:2.6rem;
+  opacity:0;animation:fadeUp 1s .7s forwards;
+}
+.hero-actions{
+  display:flex;align-items:center;gap:2rem;flex-wrap:wrap;
+  opacity:0;animation:fadeUp 1s .85s forwards;
+}
+.hero-note{
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);margin-top:1.6rem;
+  opacity:0;animation:fadeUp 1s 1s forwards;
+}
+
+/* ── SHRNUTÍ (rychlá odpověď) ── */
+.summary{
+  background:var(--dark);
+  border-bottom:1px solid var(--border);
+  padding:5rem 2rem;
+}
+.summary-inner{max-width:860px;margin:0 auto;}
+.summary p{
+  font-family:var(--serif);
+  font-size:clamp(1.15rem,2vw,1.5rem);
+  line-height:1.65;
+  font-weight:400;
+  color:var(--text);
+}
+.summary p strong{color:var(--brand-blue);font-weight:700;}
+.summary-meta{
+  display:flex;gap:2.5rem;flex-wrap:wrap;
+  margin-top:2.5rem;padding-top:2rem;
+  border-top:1px solid var(--border);
+}
+.summary-meta div{font-size:.78rem;color:var(--faint);line-height:1.6;}
+.summary-meta strong{display:block;color:var(--text);font-size:.86rem;margin-bottom:.2rem;}
+
+/* ── PŘÍBĚH ── */
+/* fotka plave vpravo, nadpis i text ji obtékají a pokračují pod ní */
+.story{
+  padding:7rem 2rem;
+  max-width:var(--wrap);
+  margin:0 auto;
+}
+.story::after{content:'';display:table;clear:both;}
+.story-img-wrap{
+  position:relative;
+  float:right;
+  width:min(46%,500px);
+  margin:.5rem 0 2.5rem 3.5rem;
+}
+.story-img{
+  width:100%;
+  /* height:auto je nutné – jinak by rozměr určil atribut height v HTML
+     a poměr stran by se neuplatnil */
+  height:auto;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  object-position:center center;
+}
+/* rámeček vybíhá doprava nahoru, tedy směrem od textu */
+.story-img-frame{
+  position:absolute;
+  top:-1.4rem;right:-1.4rem;left:1.4rem;bottom:1.4rem;
+  border:1px solid var(--brand-blue);
+  pointer-events:none;z-index:-1;
+}
+.story-wave-badge{
+  position:absolute;bottom:-1rem;left:-1rem;
+  background:var(--brand-blue);
+  width:84px;height:84px;
+  display:flex;align-items:center;justify-content:center;
+}
+.story-quote{
+  font-family:var(--serif);
+  font-size:clamp(1.3rem,2.4vw,1.9rem);
+  font-style:italic;
+  line-height:1.4;
+  color:var(--text);
+  margin:0 0 1.4rem;
+  padding-left:1.5rem;
+  border-left:2px solid var(--brand-blue);
+}
+.story-quote cite{
+  display:block;
+  font-family:var(--mono);
+  font-style:normal;
+  font-size:.68rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin-top:1rem;
+}
+.story-quote cite a{color:var(--faint);text-decoration:underline;text-underline-offset:3px;}
+.story-quote cite a:hover{color:var(--brand-blue);}
+.story-divider{
+  margin:2.5rem 0;height:1px;width:120px;
+  background:linear-gradient(to right,var(--brand-blue),transparent);
+}
+.story-stats{display:flex;gap:3rem;margin-top:2.5rem;flex-wrap:wrap;}
+.stat-n{
+  font-family:var(--serif);
+  font-size:2.6rem;font-style:italic;
+  color:var(--brand-blue);line-height:1;
+  margin-bottom:.3rem;
+}
+.stat-l{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:600;line-height:1.5;}
+
+/* ── DŮKAZ: KOUPELNY SYROVÝ ── */
+.proof{
+  position:relative;
+  min-height:520px;
+  display:grid;
+}
+.proof-photo{
+  grid-area:1/1;
+  width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  /* jen mírně ztlumeno – čitelnost řeší přechod pod textem, ne celá fotka */
+  filter:grayscale(10%) brightness(.78);
+}
+/* text sedí vlevo, kde je na fotce jen koupelna, a nezakrývá obličeje */
+.proof-overlay{
+  grid-area:1/1;
+  /* fotka má filter, a tím i vlastní vykreslovací vrstvu –
+     bez position+z-index by se překryv schoval pod ni */
+  position:relative;
+  z-index:2;
+  background:linear-gradient(to right,
+    rgba(10,10,10,.95) 0%,
+    rgba(10,10,10,.9) 30%,
+    rgba(10,10,10,.62) 44%,
+    rgba(10,10,10,.22) 68%,
+    rgba(10,10,10,.05) 100%);
+  display:flex;align-items:center;
+  padding:5rem 2rem;
+}
+.proof-content{
+  width:100%;max-width:var(--wrap);
+  margin:0 auto;
+  text-align:left;
+}
+.proof-overlay h2{max-width:460px;color:#fff;}
+.proof-overlay h2 em{color:var(--brand-blue);}
+.proof-overlay p{color:#fff;font-size:1.02rem;max-width:440px;line-height:1.8;font-weight:400;}
+.proof-numbers{
+  display:flex;gap:2.8rem;flex-wrap:wrap;justify-content:flex-start;
+  margin:2.6rem 0 2rem;
+}
+.proof-num{font-family:var(--serif);font-size:2.4rem;font-style:italic;color:var(--brand-blue);line-height:1;}
+.proof-lbl{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#fff;margin-top:.5rem;font-weight:600;}
+.proof-source{
+  font-size:1.02rem;color:#fff;line-height:1.8;max-width:460px;
+  font-weight:400;margin-bottom:2.4rem;
+}
+
+/* hranaté tlačítko ve stylu Koupelen Syrový */
+.btn-square{
+  display:inline-flex;align-items:center;gap:.9rem;
+  background:transparent;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.5);
+  font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  text-decoration:none;
+  padding:1.05em 2.2em;
+  border-radius:0;
+  transition:background .3s,border-color .3s,color .3s;
+}
+.btn-square:hover{background:#fff;border-color:#fff;color:var(--black);}
+.btn-square .cta-arrow{transition:transform .3s;}
+.btn-square:hover .cta-arrow{transform:translateX(4px);}
+
+/* ── SLUŽBA ── */
+.service{padding:7rem 2rem;background:var(--dark);}
+.service-inner{max-width:var(--wrap);margin:0 auto;}
+.service-head{text-align:center;margin-bottom:4rem;}
+.service-head h2{margin-bottom:1rem;}
+.service-head p{color:var(--muted);max-width:600px;margin:0 auto;line-height:1.8;font-weight:400;}
+
+.service-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1px;background:var(--border);
+  margin-bottom:3rem;
+}
+.service-item{background:var(--card);padding:2.5rem 2rem;}
+.service-item dt{
+  font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--brand-blue);font-weight:700;margin-bottom:1rem;
+}
+.service-item dd{
+  font-family:var(--serif);font-size:1.3rem;line-height:1.4;margin-bottom:.6rem;
+}
+.service-item .service-note{
+  display:block;margin-top:.7rem;
+  font-family:var(--mono);font-size:.88rem;color:var(--muted);
+  line-height:1.7;font-weight:400;
+}
+
+.steps{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:2.5rem;margin-top:1rem;
+}
+.step{position:relative;padding-top:2.5rem;}
+.step::before{
+  content:attr(data-n);
+  position:absolute;top:0;left:0;
+  font-family:var(--serif);font-size:2rem;font-style:italic;
+  color:var(--brand-blue);line-height:1;
+}
+.step h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:.6rem;font-weight:700;}
+.step p{color:var(--muted);font-size:.9rem;line-height:1.75;font-weight:400;}
+
+/* ── TÉMATA ── */
+.topics{padding:7rem 2rem;}
+.topics-inner{max-width:var(--wrap);margin:0 auto;}
+.topics-head{max-width:640px;margin-bottom:3.5rem;}
+.topics-list{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1.5rem;
+}
+.topic{
+  border:1px solid var(--border);
+  padding:1.8rem 1.6rem;
+  transition:border-color .3s,background .3s;
+}
+.topic:hover{border-color:var(--brand-blue-mid);background:var(--surface);}
+.topic h3{font-family:var(--serif);font-size:1.1rem;line-height:1.4;font-weight:700;}
+.topics-after{
+  margin-top:2.5rem;color:var(--muted);font-size:.94rem;
+  line-height:1.8;font-weight:300;max-width:640px;
+}
+
+/* ── PROČ ── */
+.reasons{background:var(--dark);padding:7rem 2rem;position:relative;overflow:hidden;}
+.reasons::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(to right,transparent,var(--brand-blue),transparent);
+}
+.reasons-inner{max-width:var(--wrap);margin:0 auto;}
+.reasons-head{text-align:center;margin-bottom:4rem;}
+/* pevně 3 sloupce – 6 karet vyplní přesně dvě řady, žádná díra */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+}
+.card{
+  background:var(--card);
+  padding:3rem 2.2rem 3.2rem;
+  position:relative;overflow:hidden;
+  transition:background .35s;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--brand-blue);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s cubic-bezier(.23,1,.32,1);
+}
+.card:hover{background:#202020;}
+.card:hover::before{transform:scaleX(1);}
+/* stejný styl čísel jako u kroků v sekci „Jak to probíhá“ */
+.card-num{
+  font-family:var(--serif);
+  font-size:2rem;
+  font-style:italic;
+  font-weight:400;
+  color:var(--brand-blue);
+  line-height:1;
+  margin-bottom:1.4rem;
+}
+.card-wave{margin-bottom:1.4rem;}
+.card h3{font-family:var(--serif);font-size:1.35rem;font-weight:700;margin-bottom:.9rem;line-height:1.3;}
+.card p{color:var(--muted);font-size:.92rem;line-height:1.8;font-weight:400;}
+
+/* ── PRO KOHO ── */
+.fit{padding:7rem 2rem;}
+.fit-inner{max-width:var(--wrap);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.fit-col{background:var(--black);padding:3rem 2.5rem;}
+.fit-col h3{
+  font-family:var(--serif);font-size:1.5rem;margin-bottom:1.8rem;font-weight:700;
+}
+.fit-col.yes h3{color:var(--brand-blue);}
+.fit-col ul{list-style:none;}
+.fit-col li{
+  position:relative;padding-left:1.8rem;margin-bottom:1rem;
+  color:var(--muted);font-size:.96rem;line-height:1.7;font-weight:400;
+}
+.fit-col li::before{
+  position:absolute;left:0;top:0;font-weight:700;
+}
+.fit-col.yes li::before{content:'—';color:var(--brand-blue);}
+.fit-col.no li::before{content:'—';color:var(--faint);}
+
+/* ── FAQ ── */
+.faq{background:var(--dark);padding:7rem 2rem;}
+.faq-inner{max-width:820px;margin:0 auto;}
+.faq-head{text-align:center;margin-bottom:3.5rem;}
+.faq details{
+  border-bottom:1px solid var(--border);
+}
+.faq summary{
+  cursor:pointer;list-style:none;
+  padding:1.6rem 3rem 1.6rem 0;
+  font-family:var(--serif);
+  font-size:1.15rem;
+  font-weight:700;
+  position:relative;
+  transition:color .25s;
+}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::after{
+  content:'+';
+  position:absolute;right:.4rem;top:50%;transform:translateY(-50%);
+  color:var(--brand-blue);font-size:1.5rem;font-family:var(--mono);font-weight:300;
+  transition:transform .3s;
+}
+.faq details[open] summary::after{content:'–';}
+.faq summary:hover{color:var(--brand-blue);}
+.faq details p{
+  color:var(--muted);font-size:.97rem;line-height:1.85;font-weight:400;
+  padding:0 2rem 1.8rem 0;
+}
+.faq details p+p{padding-top:1rem;}
+
+/* ── AUTOR ── */
+.author{padding:6rem 2rem;border-top:1px solid var(--border);}
+.author-inner{
+  max-width:900px;margin:0 auto;
+  display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:start;
+}
+.author-photo{
+  width:120px;height:120px;border-radius:50%;
+  object-fit:cover;object-position:center 20%;
+  border:1px solid var(--brand-blue);
+}
+.author-body h3{font-family:var(--serif);font-size:1.5rem;margin-bottom:.4rem;font-weight:700;}
+.author-role{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-blue);font-weight:700;margin-bottom:1.2rem;}
+.author-body p{color:var(--muted);font-size:.94rem;line-height:1.8;font-weight:400;margin-bottom:1rem;}
+.author-links{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.2rem;}
+.author-links a{
+  color:var(--brand-blue);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;font-weight:700;text-decoration:none;
+  border-bottom:1px solid var(--brand-blue-mid);padding-bottom:.3em;
+}
+.author-links a:hover{border-color:var(--brand-blue);}
+
+/* ── FORMULÁŘ ── */
+.booking{
+  padding:8rem 2rem;
+  position:relative;overflow:hidden;
+}
+.booking::before{
+  content:'';position:absolute;
+  width:900px;height:900px;
+  background:radial-gradient(circle,rgba(23,158,217,.06) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.booking-inner{max-width:680px;margin:0 auto;position:relative;}
+.booking-head{text-align:center;margin-bottom:3rem;}
+.booking-head h2{margin-bottom:1.2rem;}
+.booking-head p{color:var(--muted);line-height:1.8;font-weight:400;}
+
+.field{margin-bottom:1.6rem;}
+.field label{
+  display:block;
+  font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#fff;font-weight:700;margin-bottom:.6rem;
+}
+.field .req{color:var(--brand-blue);}
+.field input,.field textarea{
+  width:100%;
+  background:#22221f;
+  border:1px solid rgba(255,255,255,.22);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:1rem;
+  padding:1em 1.1em;
+  transition:border-color .25s,background .25s;
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--faint);}
+.field input:hover,.field textarea:hover{border-color:rgba(255,255,255,.4);}
+.field input:focus,.field textarea:focus{
+  outline:none;border-color:var(--brand-blue);background:#262623;
+}
+.field textarea{resize:vertical;min-height:130px;line-height:1.7;}
+.field-error{
+  color:#e2725b;font-size:.78rem;margin-top:.5rem;display:none;
+}
+.field.invalid .field-error{display:block;}
+.field.invalid input,.field.invalid textarea{border-color:#e2725b;}
+
+/* past na roboty – neviditelná pro lidi */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+
+.consent{
+  display:flex;gap:.9rem;align-items:flex-start;
+  margin:2rem 0;
+}
+.consent input{
+  width:18px;height:18px;flex:none;margin-top:.2rem;
+  accent-color:var(--brand-blue);
+}
+.consent label{font-size:.86rem;color:var(--muted);line-height:1.7;font-weight:400;}
+.consent a{color:var(--brand-blue);text-decoration:underline;text-underline-offset:3px;}
+
+.booking-submit{width:100%;justify-content:center;}
+.booking-submit[disabled]{opacity:.45;cursor:not-allowed;}
+.booking-submit[disabled]:hover::before{transform:translateX(-101%);}
+
+.form-status{
+  margin-top:1.5rem;text-align:center;
+  font-size:.88rem;line-height:1.7;display:none;
+}
+.form-status.show{display:block;}
+.form-status.ok{color:var(--brand-blue);}
+.form-status.err{color:#e2725b;}
+
+.booking-fallback{
+  margin-top:2.5rem;padding-top:2rem;
+  border-top:1px solid var(--border);
+  text-align:center;font-size:.85rem;color:var(--faint);line-height:1.8;
+}
+.booking-fallback a{color:var(--brand-blue);text-decoration:none;border-bottom:1px solid var(--brand-blue-mid);}
+
+/* ── ZÁSADY / GDPR ── */
+.privacy{background:var(--dark);border-top:1px solid var(--border);padding:5rem 2rem;}
+.privacy-inner{max-width:820px;margin:0 auto;}
+.privacy summary{
+  cursor:pointer;list-style:none;
+  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brand-blue);font-weight:700;
+}
+.privacy summary::-webkit-details-marker{display:none;}
+.privacy-body{margin-top:2rem;}
+.privacy-body h3{font-family:var(--serif);font-size:1.1rem;margin:1.6rem 0 .6rem;font-weight:700;}
+.privacy-body p,.privacy-body li{color:var(--muted);font-size:.88rem;line-height:1.8;font-weight:400;}
+.privacy-body ul{margin-left:1.2rem;}
+.privacy-note{
+  margin-top:2rem;padding:1rem 1.2rem;
+  border-left:2px solid var(--brand-blue);
+  background:var(--brand-blue-dim);
+  font-size:.82rem;color:var(--muted);line-height:1.7;
+}
+
+/* ── PATIČKA ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:2.5rem 4rem;
+  display:flex;justify-content:space-between;align-items:center;gap:1.5rem;
+  max-width:1400px;margin:0 auto;flex-wrap:wrap;
+}
+.footer-logo{display:flex;align-items:center;gap:.8rem;}
+.footer-name{font-family:var(--serif);font-size:1.1rem;font-style:italic;color:var(--brand-blue);}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.footer-links a{
+  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);text-decoration:none;transition:color .25s;
+}
+.footer-links a:hover{color:var(--brand-blue);}
+.footer-copy{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);}
+
+/* ── ANIMACE ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.reveal{
+  opacity:0;transform:translateY(35px);
+  transition:opacity .9s cubic-bezier(.23,1,.32,1),transform .9s cubic-bezier(.23,1,.32,1);
+}
+.reveal.vis{opacity:1;transform:translateY(0);}
+.reveal-d1{transition-delay:.1s;}
+.reveal-d2{transition-delay:.2s;}
+.reveal-d3{transition-delay:.3s;}
+
+/* uživatelé s omezením pohybu – žádné animace */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+  .reveal{opacity:1;transform:none;}
+  h1,.hero-sub,.hero-actions,.hero-note{opacity:1;animation:none;}
+}
+
+/* ══ RESPONZIVITA ══ */
+@media(max-width:1000px){
+  .topbar-inner{padding:1rem 2rem;}
+  .hero-left{padding:7rem 2.5rem 4rem;}
+  .story{gap:3.5rem;}
+}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;min-height:auto;}
+  .hero-left{padding:3rem 2rem 3.5rem;order:2;}
+  /* fotka nesmí zabrat celou obrazovku, aby byl vidět i text pod ní */
+  .hero-right{order:1;width:100%;height:min(100vw,58vh);}
+  .hero-photo{object-position:center 12%;}
+  .hero-right::after{
+    background:linear-gradient(to bottom,transparent 45%,rgba(10,10,10,.75) 80%,var(--black) 100%);
+  }
+  .hero-wave-overlay{display:none;}
+
+  /* na užších displejích obtékání ruší a fotka jde přes celou šířku */
+  .story{padding:5rem 2rem;}
+  .story-img-wrap{float:none;width:100%;margin:0 0 2.5rem;}
+  .story-img{aspect-ratio:3/2;}
+  .story-img-frame{top:-1rem;right:-1rem;left:1rem;bottom:1rem;}
+  .cards-grid{grid-template-columns:repeat(2,1fr);}
+  .story-img-frame{top:-1rem;left:-1rem;right:1rem;bottom:1rem;}
+  .story-stats{gap:2rem;}
+
+  .fit-inner{grid-template-columns:1fr;}
+  .proof{min-height:auto;}
+  /* na mobilu se textu vlevo vyhnout nedá, proto plošně tmavší podklad */
+  .proof-overlay{
+    padding:4rem 1.5rem;
+    background:linear-gradient(to bottom,
+      rgba(10,10,10,.72) 0%,
+      rgba(10,10,10,.88) 45%,
+      rgba(10,10,10,.94) 100%);
+  }
+  .proof-photo{filter:grayscale(15%) brightness(.5);}
+  .proof-overlay h2,.proof-overlay p,.proof-source{max-width:none;}
+  .proof-numbers{gap:2rem;}
+
+  .author-inner{grid-template-columns:1fr;gap:1.8rem;}
+  .author-photo{width:92px;height:92px;}
+
+  footer{flex-direction:column;text-align:center;padding:2.5rem 2rem;}
+}
+
+@media(max-width:600px){
+  .wrap,.summary,.topics,.reasons,.fit,.faq,.service{padding-left:1.4rem;padding-right:1.4rem;}
+  /* na úzkém displeji se z tlačítka nechá jen „Rezervovat“ */
+  .topbar-inner{padding:.8rem 1.4rem;gap:1rem;}
+  .topbar-logo{font-size:1.05rem;gap:.6rem;}
+  .topbar-logo svg{width:26px;height:16px;}
+  .topbar-cta{padding:.85em 1.3em;font-size:.62rem;gap:.6rem;}
+  .only-wide{display:none;}
+  .hero-left{padding:2.2rem 1.4rem 3rem;}
+  .hero-right{height:min(80vw,46vh);}
+  .hero-actions{flex-direction:column;align-items:stretch;gap:1.4rem;}
+  .cta-btn{justify-content:center;}
+  .summary{padding-top:4rem;padding-bottom:4rem;}
+  .summary-meta{gap:1.5rem;}
+  .story,.topics,.reasons,.fit,.faq,.service{padding-top:4.5rem;padding-bottom:4.5rem;}
+  .cards-grid{grid-template-columns:1fr;}
+  .booking{padding:5rem 1.4rem;}
+  .story-stats{gap:1.5rem 2rem;}
+  .stat-n{font-size:2.1rem;}
+  .service-item,.card{padding:2.2rem 1.6rem;}
+  .fit-col{padding:2.2rem 1.6rem;}
+  .cta-strip{padding:3rem 1.4rem;}
+}
