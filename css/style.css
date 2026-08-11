@@ -32,8 +32,11 @@ body{
 }
 img{max-width:100%;display:block;}
 /* <picture> se používá jen kvůli WebP – nesmí sám tvořit prvek rozvržení,
-   jinak by se mřížka i rozměry vztahovaly k němu místo k fotce uvnitř */
+   jinak by se mřížka i rozměry vztahovaly k němu místo k fotce uvnitř.
+   Se zprůhledněným obalem se ale do rozvržení dostanou i značky <source>,
+   proto je nutné je výslovně skrýt, jinak zaberou místo fotky. */
 picture{display:contents;}
+picture source{display:none;}
 
 /* přístupnost – skok na obsah */
 .skip{
