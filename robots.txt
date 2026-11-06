@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://DOMENA.cz/sitemap.xml
+Sitemap: https://www.syrovygroup.cz/sitemap.xml

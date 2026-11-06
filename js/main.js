@@ -2,13 +2,6 @@
    Matouš Syrový – interaktivita
    ══════════════════════════════════════════════ */
 
-/* ── Adresa Google Apps Scriptu ──
-   Zatím prázdná – formulář je proto vypnutý.
-   Až bude skript nasazený, vlož sem jeho URL
-   (https://script.google.com/macros/s/…/exec)
-   a formulář se sám aktivuje.                     */
-const FORM_ENDPOINT = '';
-
 /* ── Automatický rok v patičce ── */
 document.querySelectorAll('[data-year]').forEach(el => {
   el.textContent = new Date().getFullYear();
@@ -99,38 +92,24 @@ if (form) {
 
     if (!validate()) return;
 
-    /* ⚠️ UKÁZKOVÝ REŽIM
-       Dokud není vyplněná FORM_ENDPOINT, formulář se tváří, že odeslal,
-       ale NIKAM nic neposílá. Slouží jen k předvedení, jak to bude vypadat.
-       Web s tímto nastavením nesmí jít na veřejnou doménu. */
-    if (!FORM_ENDPOINT) {
-      submitBtn.disabled = true;
-      submitBtn.querySelector('.cta-label').textContent = 'Odesílám…';
-      setTimeout(() => {
-        form.reset();
-        showStatus('Děkuji, poptávka dorazila. Ozvu se do 48 hodin.', 'ok');
-        submitBtn.querySelector('.cta-label').textContent = 'Odesláno';
-      }, 700);
-      return;
-    }
-
     submitBtn.disabled = true;
     submitBtn.querySelector('.cta-label').textContent = 'Odesílám…';
     showStatus('', '');
 
     try {
-      await fetch(FORM_ENDPOINT, {
+      const odpoved = await fetch('/api/poptavka', {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jmeno: form.jmeno.value.trim(),
           email: form.email.value.trim(),
           firma: form.firma.value.trim(),
           zprava: form.zprava.value.trim(),
-          odeslano: new Date().toISOString()
+          website: form.website.value
         })
       });
+
+      if (!odpoved.ok) throw new Error(`HTTP ${odpoved.status}`);
 
       form.reset();
       showStatus('Děkuji, poptávka dorazila. Ozvu se do 48 hodin.', 'ok');
